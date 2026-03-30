@@ -852,7 +852,7 @@ func (l *lexer) lexVerb(startPos int) error {
 	l.pos++ // skip *
 	// Read verb name
 	nameStart := l.pos
-	for l.pos < len(l.src) && l.src[l.pos] != ')' && l.src[l.pos] != ':' {
+	for l.pos < len(l.src) && l.src[l.pos] != ')' && l.src[l.pos] != ':' && l.src[l.pos] != '=' {
 		l.pos++
 	}
 	if l.pos >= len(l.src) {
@@ -861,7 +861,7 @@ func (l *lexer) lexVerb(startPos int) error {
 	name := l.src[nameStart:l.pos]
 
 	var arg string
-	if l.src[l.pos] == ':' {
+	if l.src[l.pos] == ':' || l.src[l.pos] == '=' {
 		l.pos++
 		argStart := l.pos
 		for l.pos < len(l.src) && l.src[l.pos] != ')' {
@@ -894,8 +894,7 @@ func (l *lexer) lexVerb(startPos int) error {
 	case "MARK", "":
 		l.emit(Token{Kind: TokVerb, Pos: startPos, VerbType: VerbMark, Str: arg})
 	default:
-		// Could be (*LIMIT_MATCH=N) etc. — parsed but intentionally not honored
-		// to prevent untrusted patterns from overriding caller-set safety limits
+		// Could be (*LIMIT_MATCH=N) etc. — only honored when AllowInlineLimits is set
 		l.emit(Token{Kind: TokVerb, Pos: startPos, Str: name + ":" + arg})
 	}
 	return nil

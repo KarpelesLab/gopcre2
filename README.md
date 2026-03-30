@@ -129,10 +129,16 @@ re.SetHeapLimit(1024 * 1024) // 1 MB
 // and the limit error is available internally
 ```
 
-Note: unlike C PCRE2, inline limit directives (`(*LIMIT_MATCH=N)` etc.) in patterns
-are intentionally **ignored**. If an attacker can control the pattern, they could use
-inline directives to override the safety limits you set. Limits can only be configured
-via the `Set*Limit()` API methods.
+By default, inline limit directives (`(*LIMIT_MATCH=N)` etc.) in patterns are
+**ignored**. If an attacker can control the pattern, they could use inline directives
+to override the safety limits you set. If you trust your patterns and want to allow
+them to set their own limits, pass the `AllowInlineLimits` flag at compile time:
+
+```go
+re := gopcre2.MustCompile(`(*LIMIT_MATCH=5000)pattern`, gopcre2.AllowInlineLimits)
+```
+
+Without this flag, limits can only be configured via the `Set*Limit()` API methods.
 
 ### Recommendations
 
@@ -216,6 +222,7 @@ func (re *Regexp) SetCallout(fn CalloutFunc)
 | `NoAutoCapture` | Plain `()` are non-capturing (`(?n)`) |
 | `Anchored` | Force match at start of subject |
 | `DollarEndOnly` | `$` matches only at end, not before final newline |
+| `AllowInlineLimits` | Honor `(*LIMIT_MATCH=N)` etc. from patterns (off by default for safety) |
 
 ## License
 

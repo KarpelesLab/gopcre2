@@ -17,9 +17,9 @@ type Program struct {
 	AnchorEnd   bool   // pattern is anchored at end
 	MinLen      int    // minimum subject length that can match
 
-	// Safety limits (set via Regexp.Set*Limit methods only; inline pattern
-	// directives like (*LIMIT_MATCH=N) are intentionally ignored to prevent
-	// untrusted patterns from overriding caller-set limits).
+	// Safety limits. Set via Regexp.Set*Limit() methods. Inline pattern
+	// directives like (*LIMIT_MATCH=N) are only honored when the
+	// AllowInlineLimits flag is passed at compile time.
 	MatchLimit int // 0 = use default
 	DepthLimit int // 0 = use default
 	HeapLimit  int // 0 = use default

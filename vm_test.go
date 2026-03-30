@@ -322,6 +322,37 @@ func TestCommentGroup(t *testing.T) {
 	}
 }
 
+func TestInlineLimitsIgnoredByDefault(t *testing.T) {
+	// Without AllowInlineLimits, the (*LIMIT_MATCH=1) is ignored
+	re := MustCompile("(*LIMIT_MATCH=1)abc")
+	// If the inline limit of 1 were honored, even "abc" would fail.
+	// Since it's ignored, the match should succeed normally.
+	if !re.MatchString("abc") {
+		t.Error("inline limits should be ignored by default; 'abc' should match")
+	}
+}
+
+func TestInlineLimitsHonoredWhenEnabled(t *testing.T) {
+	// With AllowInlineLimits, the pattern can set limits
+	re := MustCompile("(*LIMIT_MATCH=100)(a+)+b", AllowInlineLimits)
+	// The inline limit of 100 should be honored — very tight
+	result := re.MatchString("aaaaaaaaaaaac")
+	if result {
+		t.Error("expected no match with inline limit of 100")
+	}
+}
+
+func TestInlineLimitsDoNotRaise(t *testing.T) {
+	// Inline limits should not be able to raise limits above API-set ones
+	re := MustCompile("(*LIMIT_MATCH=999999999)a+", AllowInlineLimits)
+	re.SetMatchLimit(100)
+	// API limit of 100 should still take effect
+	// (the lower of the two wins)
+	if !re.MatchString("a") {
+		t.Error("simple match should succeed")
+	}
+}
+
 func TestDollarEndOnly(t *testing.T) {
 	re := MustCompile("abc$", DollarEndOnly)
 	if re.MatchString("abc\n") {

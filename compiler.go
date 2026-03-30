@@ -637,8 +637,47 @@ func (c *compiler) compileVerb(node *Node) error {
 		c.emit(Inst{Op: OpThen, Str: node.Name})
 	case VerbMark:
 		c.emit(Inst{Op: OpMark, Str: node.Name})
+	default:
+		// Handle (*LIMIT_MATCH=N), (*LIMIT_DEPTH=N), (*LIMIT_HEAP=N)
+		// Only honored when AllowInlineLimits flag is set.
+		if c.flags&AllowInlineLimits != 0 {
+			c.applyInlineLimit(node.Name)
+		}
 	}
 	return nil
+}
+
+// applyInlineLimit parses a "LIMIT_MATCH:10000" style verb name and applies it.
+func (c *compiler) applyInlineLimit(name string) {
+	// name is in the form "DIRECTIVE:VALUE" (colon-joined by the lexer)
+	for i := 0; i < len(name); i++ {
+		if name[i] == ':' {
+			directive := name[:i]
+			value := name[i+1:]
+			n := 0
+			for _, ch := range value {
+				if ch < '0' || ch > '9' {
+					return
+				}
+				n = n*10 + int(ch-'0')
+				if n > 1<<30 {
+					return // overflow guard
+				}
+			}
+			if n == 0 {
+				return
+			}
+			switch directive {
+			case "LIMIT_MATCH":
+				c.prog.MatchLimit = n
+			case "LIMIT_DEPTH":
+				c.prog.DepthLimit = n
+			case "LIMIT_HEAP":
+				c.prog.HeapLimit = n
+			}
+			return
+		}
+	}
 }
 
 func (c *compiler) compileInlineOption(node *Node) error {

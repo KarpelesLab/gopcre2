@@ -98,7 +98,8 @@ const (
 type VerbKind uint8
 
 const (
-	VerbAccept VerbKind = iota
+	VerbUnknown VerbKind = iota // unrecognized or limit directive
+	VerbAccept
 	VerbFail
 	VerbCommit
 	VerbPrune

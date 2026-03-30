@@ -31,6 +31,7 @@ const (
 	NoDotStarAnchor                    // disable .* anchoring optimization
 	NoStartOptimize                    // disable start-of-match optimizations
 	MatchUnsetBackref                  // unset backreferences match empty string
+	AllowInlineLimits                  // honor (*LIMIT_MATCH=N) etc. from patterns (see security note)
 )
 
 const (

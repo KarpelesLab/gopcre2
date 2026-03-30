@@ -138,14 +138,23 @@ func (re *Regexp) SubexpIndex(name string) int {
 // newMatchVM creates a VM for matching.
 func (re *Regexp) newMatchVM(subject string, startPos int) *vm {
 	v := newVM(re.prog, subject, startPos)
+	// Apply API-set limits. If both API and inline (from pattern) limits are
+	// set, use the lower (more restrictive) value so that inline limits can
+	// tighten but never loosen the caller's limits.
 	if re.matchLimit > 0 {
-		v.matchLimit = re.matchLimit
+		if v.matchLimit == 0 || re.matchLimit < v.matchLimit {
+			v.matchLimit = re.matchLimit
+		}
 	}
 	if re.depthLimit > 0 {
-		v.depthLimit = re.depthLimit
+		if v.depthLimit == 0 || re.depthLimit < v.depthLimit {
+			v.depthLimit = re.depthLimit
+		}
 	}
 	if re.heapLimit > 0 {
-		v.heapLimit = re.heapLimit
+		if v.heapLimit == 0 || re.heapLimit < v.heapLimit {
+			v.heapLimit = re.heapLimit
+		}
 	}
 	v.callout = re.callout
 	return v
