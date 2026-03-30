@@ -4,12 +4,12 @@ import "fmt"
 
 // Program is a compiled PCRE2 pattern ready for execution by the VM.
 type Program struct {
-	Inst        []Inst            // instruction array
-	Start       int               // index of first instruction
-	NumCapture  int               // total number of capture groups (0 = whole match)
-	CapNames    []string          // capture group names by index (empty string if unnamed)
-	NameToGroup map[string][]int  // name -> group indices (for DUPNAMES)
-	Flags       Flag              // compile-time flags
+	Inst        []Inst           // instruction array
+	Start       int              // index of first instruction
+	NumCapture  int              // total number of capture groups (0 = whole match)
+	CapNames    []string         // capture group names by index (empty string if unnamed)
+	NameToGroup map[string][]int // name -> group indices (for DUPNAMES)
+	Flags       Flag             // compile-time flags
 
 	// Optimization hints
 	Prefix      string // literal prefix for fast scan (empty if none)

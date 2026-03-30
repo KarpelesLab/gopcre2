@@ -1044,8 +1044,8 @@ func (l *lexer) lexClassEscape(startPos int) error {
 		}
 		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: rune(val)})
 	case 'p', 'P':
-		l.pos-- // back up to p/P
-		l.pos-- // back to backslash
+		l.pos--    // back up to p/P
+		l.pos--    // back to backslash
 		l.pos += 2 // positioned after \p
 		return l.lexProperty(startPos, ch == 'P')
 	default:

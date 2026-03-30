@@ -56,8 +56,8 @@ func hSpaceRanges() []RuneRange {
 // vSpaceRanges returns the character ranges for vertical whitespace (\v).
 func vSpaceRanges() []RuneRange {
 	return []RuneRange{
-		{'\n', '\r'}, // LF, VT, FF, CR
-		{0x85, 0x85}, // NEL
+		{'\n', '\r'},     // LF, VT, FF, CR
+		{0x85, 0x85},     // NEL
 		{0x2028, 0x2029}, // LS, PS
 	}
 }

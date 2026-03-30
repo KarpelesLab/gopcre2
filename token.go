@@ -21,24 +21,24 @@ const (
 	TokPossessive // + after quantifier
 
 	// Anchors
-	TokCaret      // ^
-	TokDollar     // $
-	TokAnchor     // \A, \z, \Z, \G, \b, \B
+	TokCaret  // ^
+	TokDollar // $
+	TokAnchor // \A, \z, \Z, \G, \b, \B
 
 	// Groups
-	TokGroupOpen       // (  capturing
-	TokGroupClose      // )
-	TokNonCapture      // (?:
-	TokNamedCapture    // (?<name>, (?P<name>, (?'name'
-	TokAtomicGroup     // (?>
-	TokLookahead       // (?=
-	TokNegLookahead    // (?!
-	TokLookbehind      // (?<=
-	TokNegLookbehind   // (?<!
-	TokBranchReset     // (?|
-	TokComment         // (?#...)
-	TokInlineOption    // (?imsx-imsx) or (?imsx-imsx:
-	TokConditional     // (?(
+	TokGroupOpen     // (  capturing
+	TokGroupClose    // )
+	TokNonCapture    // (?:
+	TokNamedCapture  // (?<name>, (?P<name>, (?'name'
+	TokAtomicGroup   // (?>
+	TokLookahead     // (?=
+	TokNegLookahead  // (?!
+	TokLookbehind    // (?<=
+	TokNegLookbehind // (?<!
+	TokBranchReset   // (?|
+	TokComment       // (?#...)
+	TokInlineOption  // (?imsx-imsx) or (?imsx-imsx:
+	TokConditional   // (?(
 
 	// Alternation
 	TokAlternate // |
@@ -70,28 +70,28 @@ const (
 type AnchorKind uint8
 
 const (
-	AnchorBeginText     AnchorKind = iota // \A
-	AnchorEndText                         // \z
-	AnchorEndTextOpt                      // \Z (before optional final newline)
-	AnchorWordBoundary                    // \b
-	AnchorNonWord                         // \B
-	AnchorStartOfMatch                    // \G
+	AnchorBeginText    AnchorKind = iota // \A
+	AnchorEndText                        // \z
+	AnchorEndTextOpt                     // \Z (before optional final newline)
+	AnchorWordBoundary                   // \b
+	AnchorNonWord                        // \B
+	AnchorStartOfMatch                   // \G
 )
 
 // CharTypeKind identifies which character type shorthand this is.
 type CharTypeKind uint8
 
 const (
-	CharTypeDigit    CharTypeKind = iota // \d
-	CharTypeNonDigit                     // \D
-	CharTypeWord                         // \w
-	CharTypeNonWord                      // \W
-	CharTypeSpace                        // \s
-	CharTypeNonSpace                     // \S
-	CharTypeHSpace                       // \h
-	CharTypeNonHSpace                    // \H
-	CharTypeVSpace                       // \v
-	CharTypeNonVSpace                    // \V
+	CharTypeDigit     CharTypeKind = iota // \d
+	CharTypeNonDigit                      // \D
+	CharTypeWord                          // \w
+	CharTypeNonWord                       // \W
+	CharTypeSpace                         // \s
+	CharTypeNonSpace                      // \S
+	CharTypeHSpace                        // \h
+	CharTypeNonHSpace                     // \H
+	CharTypeVSpace                        // \v
+	CharTypeNonVSpace                     // \V
 )
 
 // VerbKind identifies a backtracking control verb.

@@ -65,8 +65,8 @@ func TestLexerEscapes(t *testing.T) {
 		{"\\1", false},
 		{"\\g{1}", false},
 		{"\\k<name>", false},
-		{"\\", true},       // trailing backslash
-		{"\\Q", true},      // unrecognized escape
+		{"\\", true},  // trailing backslash
+		{"\\Q", true}, // unrecognized escape
 	}
 
 	for _, tt := range tests {

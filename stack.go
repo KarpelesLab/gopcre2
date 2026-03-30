@@ -16,18 +16,18 @@ const (
 
 // stackFrame is a single entry on the backtrack stack.
 type stackFrame struct {
-	kind     frameKind
-	pc       uint32 // instruction to resume at (for frameSplit)
-	pos      int    // subject position
-	capSlot  int    // capture slot index (for frameCapture)
-	capVal   int    // saved capture value (for frameCapture)
-	captures []int  // full capture snapshot (for frameRecursion)
-	depth    int    // recursion depth (for frameRecursion)
-	verbKind VerbKind // for frameVerb
-	markName string   // for frameMark
-	markPos  int      // position at which mark was set
-	flags    Flag     // for frameFlagSave
-	matchStart int   // saved match start for lookarounds
+	kind       frameKind
+	pc         uint32   // instruction to resume at (for frameSplit)
+	pos        int      // subject position
+	capSlot    int      // capture slot index (for frameCapture)
+	capVal     int      // saved capture value (for frameCapture)
+	captures   []int    // full capture snapshot (for frameRecursion)
+	depth      int      // recursion depth (for frameRecursion)
+	verbKind   VerbKind // for frameVerb
+	markName   string   // for frameMark
+	markPos    int      // position at which mark was set
+	flags      Flag     // for frameFlagSave
+	matchStart int      // saved match start for lookarounds
 }
 
 // btStack is a heap-allocated backtrack stack.

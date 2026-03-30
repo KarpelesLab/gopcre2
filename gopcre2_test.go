@@ -49,11 +49,11 @@ func TestCompileBasic(t *testing.T) {
 		{".", DotAll, false},
 		{"^.+$", Multiline, false},
 		// Errors
-		{"(", 0, true},           // unterminated group
-		{"[", 0, true},           // unterminated character class
-		{"\\", 0, true},          // trailing backslash
-		{"(?<name", 0, true},     // unterminated named group
-		{"\\p{", 0, true},        // unterminated property
+		{"(", 0, true},       // unterminated group
+		{"[", 0, true},       // unterminated character class
+		{"\\", 0, true},      // trailing backslash
+		{"(?<name", 0, true}, // unterminated named group
+		{"\\p{", 0, true},    // unterminated property
 	}
 
 	for _, tt := range tests {

@@ -10,12 +10,12 @@ const (
 	OpNop                 // no-op
 
 	// Character matching
-	OpRune          // match single rune (Runes[0])
-	OpRuneFold      // match rune with case folding (Runes[0])
-	OpCharClass     // match against character class (ranges in Runes, Negate flag)
-	OpAnyCharNotNL  // match any char except newline
-	OpAnyChar       // match any char including newline (DOTALL)
-	OpCharType      // match character type \d, \w, etc. (N = CharTypeKind)
+	OpRune         // match single rune (Runes[0])
+	OpRuneFold     // match rune with case folding (Runes[0])
+	OpCharClass    // match against character class (ranges in Runes, Negate flag)
+	OpAnyCharNotNL // match any char except newline
+	OpAnyChar      // match any char including newline (DOTALL)
+	OpCharType     // match character type \d, \w, etc. (N = CharTypeKind)
 
 	// Branching
 	OpSplit     // greedy split: try Out first, then Arg
@@ -37,26 +37,26 @@ const (
 	OpAssertStartOfMatch     // \G
 
 	// Lookaround
-	OpLookaheadStart    // begin positive lookahead
-	OpLookaheadEnd      // end positive lookahead
-	OpNegLookaheadStart // begin negative lookahead
-	OpNegLookaheadEnd   // end negative lookahead
-	OpLookbehindStart   // begin positive lookbehind (N = min len, N2 = max len)
-	OpLookbehindEnd     // end positive lookbehind
+	OpLookaheadStart     // begin positive lookahead
+	OpLookaheadEnd       // end positive lookahead
+	OpNegLookaheadStart  // begin negative lookahead
+	OpNegLookaheadEnd    // end negative lookahead
+	OpLookbehindStart    // begin positive lookbehind (N = min len, N2 = max len)
+	OpLookbehindEnd      // end positive lookbehind
 	OpNegLookbehindStart // begin negative lookbehind
-	OpNegLookbehindEnd  // end negative lookbehind
+	OpNegLookbehindEnd   // end negative lookbehind
 
 	// Atomic group
 	OpAtomicStart // begin atomic group (push cut point)
 	OpAtomicEnd   // end atomic group (discard backtrack entries)
 
 	// Backreference
-	OpBackref // match text of capture group N (case-sensitive)
+	OpBackref     // match text of capture group N (case-sensitive)
 	OpBackrefFold // match text of capture group N (case-insensitive)
 
 	// Recursion / Subroutines
-	OpRecurse         // recurse entire pattern
-	OpSubroutineCall  // call subroutine group N
+	OpRecurse          // recurse entire pattern
+	OpSubroutineCall   // call subroutine group N
 	OpSubroutineReturn // return from subroutine
 
 	// Match point reset
@@ -86,11 +86,11 @@ const (
 // Inst is a single VM instruction.
 type Inst struct {
 	Op     Opcode
-	Out    uint32   // primary branch / next instruction
-	Arg    uint32   // secondary branch target
-	N      int      // numeric operand (group index, char type, etc.)
-	N2     int      // second numeric operand
-	Runes  []rune   // for OpRune, OpRuneFold: single rune; for OpCharClass: range pairs [lo,hi,lo,hi,...]
-	Negate bool     // for OpCharClass: negated class
-	Str    string   // for names, property names, mark names, callout strings
+	Out    uint32 // primary branch / next instruction
+	Arg    uint32 // secondary branch target
+	N      int    // numeric operand (group index, char type, etc.)
+	N2     int    // second numeric operand
+	Runes  []rune // for OpRune, OpRuneFold: single rune; for OpCharClass: range pairs [lo,hi,lo,hi,...]
+	Negate bool   // for OpCharClass: negated class
+	Str    string // for names, property names, mark names, callout strings
 }

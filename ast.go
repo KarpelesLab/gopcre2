@@ -4,40 +4,40 @@ package gopcre2
 type NodeKind uint8
 
 const (
-	NdLiteral         NodeKind = iota // single literal rune
-	NdDot                             // . (any char)
-	NdCharClass                       // character class [...]
-	NdConcat                          // concatenation of children
-	NdAlternate                       // alternation (|)
-	NdCapture                         // capturing group
-	NdNonCapture                      // non-capturing group (?:...)
-	NdNamedCapture                    // named capturing group
-	NdBranchReset                     // branch reset group (?|...)
-	NdRepeat                          // quantifier: *, +, ?, {n,m}
-	NdAnchorBeginLine                 // ^
-	NdAnchorEndLine                   // $
-	NdAnchorBeginText                 // \A
-	NdAnchorEndText                   // \z
-	NdAnchorEndTextOpt                // \Z
-	NdAnchorStartOfMatch              // \G
-	NdWordBoundary                    // \b
-	NdNonWordBoundary                 // \B
-	NdBackref                         // backreference \1, \k<name>
-	NdLookahead                       // (?=...)
-	NdNegLookahead                    // (?!...)
-	NdLookbehind                      // (?<=...)
-	NdNegLookbehind                   // (?<!...)
-	NdAtomicGroup                     // (?>...)
-	NdConditional                     // (?(cond)yes|no)
-	NdRecursion                       // (?R)
-	NdSubroutineCall                  // (?1), (?&name)
-	NdCharType                        // \d, \w, \s, etc.
-	NdProperty                        // \p{...}, \P{...}
-	NdMatchPointReset                 // \K
-	NdVerb                            // backtracking control verb
-	NdCallout                         // (?C...)
-	NdInlineOption                    // (?imsx-imsx)
-	NdEmpty                           // empty expression
+	NdLiteral            NodeKind = iota // single literal rune
+	NdDot                                // . (any char)
+	NdCharClass                          // character class [...]
+	NdConcat                             // concatenation of children
+	NdAlternate                          // alternation (|)
+	NdCapture                            // capturing group
+	NdNonCapture                         // non-capturing group (?:...)
+	NdNamedCapture                       // named capturing group
+	NdBranchReset                        // branch reset group (?|...)
+	NdRepeat                             // quantifier: *, +, ?, {n,m}
+	NdAnchorBeginLine                    // ^
+	NdAnchorEndLine                      // $
+	NdAnchorBeginText                    // \A
+	NdAnchorEndText                      // \z
+	NdAnchorEndTextOpt                   // \Z
+	NdAnchorStartOfMatch                 // \G
+	NdWordBoundary                       // \b
+	NdNonWordBoundary                    // \B
+	NdBackref                            // backreference \1, \k<name>
+	NdLookahead                          // (?=...)
+	NdNegLookahead                       // (?!...)
+	NdLookbehind                         // (?<=...)
+	NdNegLookbehind                      // (?<!...)
+	NdAtomicGroup                        // (?>...)
+	NdConditional                        // (?(cond)yes|no)
+	NdRecursion                          // (?R)
+	NdSubroutineCall                     // (?1), (?&name)
+	NdCharType                           // \d, \w, \s, etc.
+	NdProperty                           // \p{...}, \P{...}
+	NdMatchPointReset                    // \K
+	NdVerb                               // backtracking control verb
+	NdCallout                            // (?C...)
+	NdInlineOption                       // (?imsx-imsx)
+	NdEmpty                              // empty expression
 )
 
 // GreedyKind specifies the greediness of a quantifier.
@@ -53,13 +53,13 @@ const (
 type CondKind uint8
 
 const (
-	CondBackref    CondKind = iota // (?(1)...) reference to capture group
-	CondNamedRef                   // (?(name)...)
-	CondRecursion                  // (?(R)...)
-	CondRecurseNum                 // (?(R1)...)
-	CondRecurseName                // (?(R&name)...)
-	CondDefine                     // (?(DEFINE)...)
-	CondAssert                     // (?(assert)...) lookahead/lookbehind condition
+	CondBackref     CondKind = iota // (?(1)...) reference to capture group
+	CondNamedRef                    // (?(name)...)
+	CondRecursion                   // (?(R)...)
+	CondRecurseNum                  // (?(R1)...)
+	CondRecurseName                 // (?(R&name)...)
+	CondDefine                      // (?(DEFINE)...)
+	CondAssert                      // (?(assert)...) lookahead/lookbehind condition
 )
 
 // Node is a node in the AST for a PCRE2 pattern.

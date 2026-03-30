@@ -9,10 +9,10 @@ import (
 type vm struct {
 	prog       *Program
 	subject    string
-	pos        int    // current position in subject
-	matchStart int    // where the reported match starts (\K can change this)
-	startPos   int    // where the current match attempt began (\G)
-	captures   []int  // ovector: pairs of [start, end) per group; -1 = unset
+	pos        int   // current position in subject
+	matchStart int   // where the reported match starts (\K can change this)
+	startPos   int   // where the current match attempt began (\G)
+	captures   []int // ovector: pairs of [start, end) per group; -1 = unset
 	stack      *btStack
 	flags      Flag   // runtime flags
 	steps      int    // step counter for match limit

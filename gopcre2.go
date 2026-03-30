@@ -24,7 +24,7 @@ import (
 // Regexp is a compiled PCRE2 regular expression. It is safe for concurrent use
 // by multiple goroutines (matching does not modify the Regexp).
 type Regexp struct {
-	expr       string   // original pattern
+	expr       string // original pattern
 	prog       *Program
 	flags      Flag
 	matchLimit int
@@ -74,8 +74,8 @@ func compile(pattern string, flags Flag) (*Regexp, error) {
 	optimize(prog)
 
 	return &Regexp{
-		expr: pattern,
-		prog: prog,
+		expr:  pattern,
+		prog:  prog,
 		flags: flags,
 	}, nil
 }

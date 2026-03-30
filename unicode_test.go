@@ -37,11 +37,11 @@ func TestUnicodeProperties(t *testing.T) {
 		{`\PL`, "a", false},
 
 		// Scripts
-		{`\p{Greek}`, "\u03B1", true},  // α
+		{`\p{Greek}`, "\u03B1", true}, // α
 		{`\p{Greek}`, "a", false},
 		{`\p{Latin}`, "a", true},
 		{`\p{Latin}`, "\u03B1", false},
-		{`\p{Han}`, "\u4e00", true},    // 一
+		{`\p{Han}`, "\u4e00", true},      // 一
 		{`\p{Cyrillic}`, "\u0410", true}, // А (Cyrillic A)
 
 		// Negated with ^

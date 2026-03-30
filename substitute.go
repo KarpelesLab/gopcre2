@@ -80,10 +80,10 @@ type caseMode uint8
 
 const (
 	caseNone      caseMode = iota
-	caseUpper                      // \U — uppercase all
-	caseLower                      // \L — lowercase all
-	caseUpperNext                  // \u — uppercase next char only
-	caseLowerNext                  // \l — lowercase next char only
+	caseUpper              // \U — uppercase all
+	caseLower              // \L — lowercase all
+	caseUpperNext          // \u — uppercase next char only
+	caseLowerNext          // \l — lowercase next char only
 )
 
 // expandPCRE2Repl expands a PCRE2-style replacement string.

@@ -4,16 +4,16 @@ import "unicode"
 
 // compiler compiles an AST into a Program (bytecode).
 type compiler struct {
-	prog       *Program
-	flags      Flag
-	caseFold   bool
+	prog     *Program
+	flags    Flag
+	caseFold bool
 }
 
 func newCompiler(flags Flag) *compiler {
 	return &compiler{
 		prog: &Program{
 			Inst:        make([]Inst, 0, 64),
-			CapNames:    []string{""},  // index 0 is the whole match (unnamed)
+			CapNames:    []string{""}, // index 0 is the whole match (unnamed)
 			NameToGroup: make(map[string][]int),
 			GroupEntry:  make(map[int]int),
 			GroupEnd:    make(map[int]int),
