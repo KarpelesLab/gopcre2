@@ -1,5 +1,10 @@
 # gopcre2
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/KarpelesLab/gopcre2.svg)](https://pkg.go.dev/github.com/KarpelesLab/gopcre2)
+[![Test](https://github.com/KarpelesLab/gopcre2/actions/workflows/test.yml/badge.svg)](https://github.com/KarpelesLab/gopcre2/actions/workflows/test.yml)
+[![Coverage Status](https://coveralls.io/repos/github/KarpelesLab/gopcre2/badge.svg?branch=master)](https://coveralls.io/github/KarpelesLab/gopcre2?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/KarpelesLab/gopcre2)](https://goreportcard.com/report/github.com/KarpelesLab/gopcre2)
+
 A pure Go implementation of [PCRE2](https://www.pcre.org/) (Perl Compatible Regular Expressions).
 No cgo, no external dependencies.
 
