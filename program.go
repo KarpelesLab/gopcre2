@@ -38,75 +38,53 @@ func (p *Program) Dump() string {
 	return s
 }
 
+// opNames maps opcodes to their display names for debugging.
+var opNames = map[Opcode]string{
+	OpMatch: "Match", OpFail: "Fail", OpNop: "Nop",
+	OpRune: "Rune", OpRuneFold: "RuneFold", OpCharClass: "CharClass",
+	OpAnyCharNotNL: "AnyCharNotNL", OpAnyChar: "AnyChar", OpCharType: "CharType",
+	OpSplit: "Split", OpSplitLazy: "SplitLazy", OpJump: "Jump",
+	OpCaptureStart: "CaptureStart", OpCaptureEnd: "CaptureEnd",
+	OpAssertBeginLine: "AssertBeginLine", OpAssertEndLine: "AssertEndLine",
+	OpAssertBeginText: "AssertBeginText", OpAssertEndText: "AssertEndText",
+	OpAssertEndTextOrNewline: "AssertEndTextOpt",
+	OpAssertWordBoundary:     "AssertWordBoundary", OpAssertNonWordBoundary: "AssertNonWordBoundary",
+	OpAssertStartOfMatch: "AssertStartOfMatch",
+	OpBackref:            "Backref", OpBackrefFold: "BackrefFold",
+	OpResetMatchStart: "ResetMatchStart",
+	OpLookaheadStart:  "LookaheadStart", OpLookaheadEnd: "LookaheadEnd",
+	OpNegLookaheadStart: "NegLookaheadStart", OpNegLookaheadEnd: "NegLookaheadEnd",
+	OpLookbehindStart: "LookbehindStart", OpLookbehindEnd: "LookbehindEnd",
+	OpNegLookbehindStart: "NegLookbehindStart", OpNegLookbehindEnd: "NegLookbehindEnd",
+	OpAtomicStart: "AtomicStart", OpAtomicEnd: "AtomicEnd",
+	OpRecurse: "Recurse", OpSubroutineCall: "SubroutineCall", OpSubroutineReturn: "SubroutineReturn",
+	OpAccept: "Accept", OpVerbFail: "VerbFail",
+	OpCommit: "Commit", OpPrune: "Prune", OpSkip: "Skip", OpSkipName: "SkipName",
+	OpThen: "Then", OpMark: "Mark", OpCallout: "Callout",
+	OpProperty: "Property", OpPropertyNeg: "PropertyNeg", OpSetFlags: "SetFlags",
+}
+
 func instString(inst Inst) string {
+	name := opNames[inst.Op]
+	if name == "" {
+		name = fmt.Sprintf("Op(%d)", inst.Op)
+	}
 	switch inst.Op {
-	case OpMatch:
-		return "Match"
-	case OpFail:
-		return "Fail"
-	case OpNop:
-		return fmt.Sprintf("Nop -> %d", inst.Out)
-	case OpRune:
-		return fmt.Sprintf("Rune %q -> %d", string(inst.Runes), inst.Out)
-	case OpRuneFold:
-		return fmt.Sprintf("RuneFold %q -> %d", string(inst.Runes), inst.Out)
+	case OpMatch, OpFail, OpAccept, OpVerbFail:
+		return name
+	case OpRune, OpRuneFold:
+		return fmt.Sprintf("%s %q -> %d", name, string(inst.Runes), inst.Out)
 	case OpCharClass:
 		neg := ""
 		if inst.Negate {
 			neg = "^"
 		}
 		return fmt.Sprintf("CharClass %s%v -> %d", neg, inst.Runes, inst.Out)
-	case OpAnyCharNotNL:
-		return fmt.Sprintf("AnyCharNotNL -> %d", inst.Out)
-	case OpAnyChar:
-		return fmt.Sprintf("AnyChar -> %d", inst.Out)
-	case OpCharType:
-		return fmt.Sprintf("CharType(%d) -> %d", inst.N, inst.Out)
-	case OpSplit:
-		return fmt.Sprintf("Split -> %d, %d", inst.Out, inst.Arg)
-	case OpSplitLazy:
-		return fmt.Sprintf("SplitLazy -> %d, %d", inst.Out, inst.Arg)
-	case OpJump:
-		return fmt.Sprintf("Jump -> %d", inst.Out)
-	case OpCaptureStart:
-		return fmt.Sprintf("CaptureStart(%d) -> %d", inst.N, inst.Out)
-	case OpCaptureEnd:
-		return fmt.Sprintf("CaptureEnd(%d) -> %d", inst.N, inst.Out)
-	case OpAssertBeginLine:
-		return fmt.Sprintf("AssertBeginLine -> %d", inst.Out)
-	case OpAssertEndLine:
-		return fmt.Sprintf("AssertEndLine -> %d", inst.Out)
-	case OpAssertBeginText:
-		return fmt.Sprintf("AssertBeginText -> %d", inst.Out)
-	case OpAssertEndText:
-		return fmt.Sprintf("AssertEndText -> %d", inst.Out)
-	case OpAssertEndTextOrNewline:
-		return fmt.Sprintf("AssertEndTextOpt -> %d", inst.Out)
-	case OpAssertWordBoundary:
-		return fmt.Sprintf("AssertWordBoundary -> %d", inst.Out)
-	case OpAssertNonWordBoundary:
-		return fmt.Sprintf("AssertNonWordBoundary -> %d", inst.Out)
-	case OpBackref:
-		return fmt.Sprintf("Backref(%d) -> %d", inst.N, inst.Out)
-	case OpResetMatchStart:
-		return fmt.Sprintf("ResetMatchStart -> %d", inst.Out)
-	case OpLookaheadStart:
-		return fmt.Sprintf("LookaheadStart -> %d", inst.Out)
-	case OpLookaheadEnd:
-		return fmt.Sprintf("LookaheadEnd -> %d", inst.Out)
-	case OpNegLookaheadStart:
-		return fmt.Sprintf("NegLookaheadStart -> %d", inst.Out)
-	case OpNegLookaheadEnd:
-		return fmt.Sprintf("NegLookaheadEnd -> %d", inst.Out)
-	case OpAtomicStart:
-		return fmt.Sprintf("AtomicStart -> %d", inst.Out)
-	case OpAtomicEnd:
-		return fmt.Sprintf("AtomicEnd -> %d", inst.Out)
-	case OpAccept:
-		return "Accept"
-	case OpVerbFail:
-		return "VerbFail"
+	case OpSplit, OpSplitLazy:
+		return fmt.Sprintf("%s -> %d, %d", name, inst.Out, inst.Arg)
+	case OpCaptureStart, OpCaptureEnd, OpCharType, OpBackref, OpBackrefFold:
+		return fmt.Sprintf("%s(%d) -> %d", name, inst.N, inst.Out)
 	default:
-		return fmt.Sprintf("Op(%d) -> %d", inst.Op, inst.Out)
+		return fmt.Sprintf("%s -> %d", name, inst.Out)
 	}
 }

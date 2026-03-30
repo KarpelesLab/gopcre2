@@ -233,6 +233,26 @@ func (l *lexer) parseInt() (int, bool) {
 	return n, l.pos > start
 }
 
+// charTypeEscapes maps single-character escapes to their CharTypeKind.
+var charTypeEscapes = map[byte]CharTypeKind{
+	'd': CharTypeDigit, 'D': CharTypeNonDigit,
+	'w': CharTypeWord, 'W': CharTypeNonWord,
+	's': CharTypeSpace, 'S': CharTypeNonSpace,
+	'h': CharTypeHSpace, 'H': CharTypeNonHSpace,
+	'v': CharTypeVSpace, 'V': CharTypeNonVSpace,
+}
+
+// anchorEscapes maps single-character escapes to their AnchorKind.
+var anchorEscapes = map[byte]AnchorKind{
+	'A': AnchorBeginText, 'z': AnchorEndText, 'Z': AnchorEndTextOpt,
+	'b': AnchorWordBoundary, 'B': AnchorNonWord, 'G': AnchorStartOfMatch,
+}
+
+// simpleEscapes maps single-character escapes to their literal rune value.
+var simpleEscapes = map[byte]rune{
+	'n': '\n', 'r': '\r', 't': '\t', 'f': '\f', 'a': '\a', 'e': 0x1B,
+}
+
 func (l *lexer) lexEscape(startPos int) error {
 	l.pos++ // skip backslash
 	if l.pos >= len(l.src) {
@@ -241,127 +261,79 @@ func (l *lexer) lexEscape(startPos int) error {
 	ch := l.src[l.pos]
 	l.pos++
 
+	if ct, ok := charTypeEscapes[ch]; ok {
+		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: ct})
+		return nil
+	}
+	if ak, ok := anchorEscapes[ch]; ok {
+		l.emit(Token{Kind: TokAnchor, Pos: startPos, AnchorType: ak})
+		return nil
+	}
+	if r, ok := simpleEscapes[ch]; ok {
+		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: r})
+		return nil
+	}
+
 	switch ch {
-	// Character type shortcuts
-	case 'd':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeDigit})
-	case 'D':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeNonDigit})
-	case 'w':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeWord})
-	case 'W':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeNonWord})
-	case 's':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeSpace})
-	case 'S':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeNonSpace})
-	case 'h':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeHSpace})
-	case 'H':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeNonHSpace})
-	case 'v':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeVSpace})
-	case 'V':
-		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeNonVSpace})
-
-	// Anchors
-	case 'A':
-		l.emit(Token{Kind: TokAnchor, Pos: startPos, AnchorType: AnchorBeginText})
-	case 'z':
-		l.emit(Token{Kind: TokAnchor, Pos: startPos, AnchorType: AnchorEndText})
-	case 'Z':
-		l.emit(Token{Kind: TokAnchor, Pos: startPos, AnchorType: AnchorEndTextOpt})
-	case 'b':
-		l.emit(Token{Kind: TokAnchor, Pos: startPos, AnchorType: AnchorWordBoundary})
-	case 'B':
-		l.emit(Token{Kind: TokAnchor, Pos: startPos, AnchorType: AnchorNonWord})
-	case 'G':
-		l.emit(Token{Kind: TokAnchor, Pos: startPos, AnchorType: AnchorStartOfMatch})
-
-	// Match point reset
 	case 'K':
 		l.emit(Token{Kind: TokBackslashK, Pos: startPos})
-
-	// Simple escape sequences
-	case 'n':
-		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: '\n'})
-	case 'r':
-		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: '\r'})
-	case 't':
-		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: '\t'})
-	case 'f':
-		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: '\f'})
-	case 'a':
-		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: '\a'})
-	case 'e':
-		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: 0x1B})
-
-	// Hex escape
 	case 'x':
 		return l.lexHexEscape(startPos)
-
-	// Octal escape
 	case 'o':
 		return l.lexOctalBrace(startPos)
-
-	// Control character
 	case 'c':
 		return l.lexControlChar(startPos)
-
-	// Unicode property
 	case 'p', 'P':
 		return l.lexProperty(startPos, ch == 'P')
-
-	// Backreferences
 	case '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		num := int(ch - '0')
-		for l.pos < len(l.src) && l.src[l.pos] >= '0' && l.src[l.pos] <= '9' {
-			d := int(l.src[l.pos] - '0')
-			if num > 100000 { // cap to prevent overflow
-				l.pos++
-				continue
-			}
-			num = num*10 + d
-			l.pos++
-		}
-		l.emit(Token{Kind: TokBackref, Pos: startPos, Num: num})
-
+		return l.lexBackrefDigit(startPos, ch)
 	case 'g':
 		return l.lexBackrefG(startPos)
 	case 'k':
 		return l.lexBackrefK(startPos)
-
-	// Metacharacter escapes — treat as literals
 	case '\\', '.', '^', '$', '|', '(', ')', '[', ']', '{', '}', '*', '+', '?', '/':
 		l.emit(Token{Kind: TokLiteral, Pos: startPos, Literal: rune(ch)})
-
-	// Octal \0, \0nn
 	case '0':
-		val := 0
-		count := 0
-		for count < 2 && l.pos < len(l.src) && l.src[l.pos] >= '0' && l.src[l.pos] <= '7' {
-			val = val*8 + int(l.src[l.pos]-'0')
-			l.pos++
-			count++
-		}
-		l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: rune(val)})
-
-	// R and N as character types (handled later in charclass/unicode phases)
+		l.lexOctalZero(startPos)
 	case 'R':
 		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeVSpace, Str: "R"})
 	case 'N':
 		l.emit(Token{Kind: TokCharType, Pos: startPos, CharType: CharTypeNonVSpace, Str: "N"})
 	case 'X':
 		l.emit(Token{Kind: TokCharType, Pos: startPos, Str: "X"})
-
 	default:
-		// Unknown escape — treat as literal (PCRE2 behavior for unknown escapes of non-alnum)
 		if (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') {
 			return l.errorf(startPos, "unrecognized escape sequence \\%c", ch)
 		}
 		l.emit(Token{Kind: TokLiteral, Pos: startPos, Literal: rune(ch)})
 	}
 	return nil
+}
+
+func (l *lexer) lexBackrefDigit(startPos int, ch byte) error {
+	num := int(ch - '0')
+	for l.pos < len(l.src) && l.src[l.pos] >= '0' && l.src[l.pos] <= '9' {
+		d := int(l.src[l.pos] - '0')
+		if num > 100000 {
+			l.pos++
+			continue
+		}
+		num = num*10 + d
+		l.pos++
+	}
+	l.emit(Token{Kind: TokBackref, Pos: startPos, Num: num})
+	return nil
+}
+
+func (l *lexer) lexOctalZero(startPos int) {
+	val := 0
+	count := 0
+	for count < 2 && l.pos < len(l.src) && l.src[l.pos] >= '0' && l.src[l.pos] <= '7' {
+		val = val*8 + int(l.src[l.pos]-'0')
+		l.pos++
+		count++
+	}
+	l.emit(Token{Kind: TokEscapeSeq, Pos: startPos, Literal: rune(val)})
 }
 
 func (l *lexer) lexHexEscape(startPos int) error {

@@ -548,40 +548,26 @@ type propertyRef struct {
 	negate bool
 }
 
+// posixClasses maps POSIX class names to their rune ranges.
+var posixClasses = map[string][]RuneRange{
+	"alpha":  {{'A', 'Z'}, {'a', 'z'}},
+	"digit":  {{'0', '9'}},
+	"alnum":  {{'0', '9'}, {'A', 'Z'}, {'a', 'z'}},
+	"ascii":  {{0, 127}},
+	"blank":  {{'\t', '\t'}, {' ', ' '}},
+	"cntrl":  {{0, 31}, {127, 127}},
+	"graph":  {{'!', '~'}},
+	"lower":  {{'a', 'z'}},
+	"print":  {{' ', '~'}},
+	"punct":  {{'!', '/'}, {':', '@'}, {'[', '`'}, {'{', '~'}},
+	"space":  {{'\t', '\r'}, {' ', ' '}},
+	"upper":  {{'A', 'Z'}},
+	"word":   {{'0', '9'}, {'A', 'Z'}, {'_', '_'}, {'a', 'z'}},
+	"xdigit": {{'0', '9'}, {'A', 'F'}, {'a', 'f'}},
+}
+
 // posixClassRanges returns the rune ranges for a POSIX character class name.
 func posixClassRanges(name string, negate bool) []RuneRange {
-	var ranges []RuneRange
-	switch name {
-	case "alpha":
-		ranges = []RuneRange{{'A', 'Z'}, {'a', 'z'}}
-	case "digit":
-		ranges = []RuneRange{{'0', '9'}}
-	case "alnum":
-		ranges = []RuneRange{{'0', '9'}, {'A', 'Z'}, {'a', 'z'}}
-	case "ascii":
-		ranges = []RuneRange{{0, 127}}
-	case "blank":
-		ranges = []RuneRange{{'\t', '\t'}, {' ', ' '}}
-	case "cntrl":
-		ranges = []RuneRange{{0, 31}, {127, 127}}
-	case "graph":
-		ranges = []RuneRange{{'!', '~'}}
-	case "lower":
-		ranges = []RuneRange{{'a', 'z'}}
-	case "print":
-		ranges = []RuneRange{{' ', '~'}}
-	case "punct":
-		ranges = []RuneRange{{'!', '/'}, {':', '@'}, {'[', '`'}, {'{', '~'}}
-	case "space":
-		ranges = []RuneRange{{'\t', '\r'}, {' ', ' '}}
-	case "upper":
-		ranges = []RuneRange{{'A', 'Z'}}
-	case "word":
-		ranges = []RuneRange{{'0', '9'}, {'A', 'Z'}, {'_', '_'}, {'a', 'z'}}
-	case "xdigit":
-		ranges = []RuneRange{{'0', '9'}, {'A', 'F'}, {'a', 'f'}}
-	}
-	// Negation is handled at the NdCharClass level, not here
-	_ = negate
-	return ranges
+	_ = negate // negation is handled at the NdCharClass level
+	return posixClasses[name]
 }
