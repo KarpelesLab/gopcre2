@@ -129,12 +129,10 @@ re.SetHeapLimit(1024 * 1024) // 1 MB
 // and the limit error is available internally
 ```
 
-Limits can also be set inline in patterns:
-
-```
-(*LIMIT_MATCH=10000)pattern
-(*LIMIT_DEPTH=50)pattern
-```
+Note: unlike C PCRE2, inline limit directives (`(*LIMIT_MATCH=N)` etc.) in patterns
+are intentionally **ignored**. If an attacker can control the pattern, they could use
+inline directives to override the safety limits you set. Limits can only be configured
+via the `Set*Limit()` API methods.
 
 ### Recommendations
 

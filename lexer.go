@@ -894,7 +894,8 @@ func (l *lexer) lexVerb(startPos int) error {
 	case "MARK", "":
 		l.emit(Token{Kind: TokVerb, Pos: startPos, VerbType: VerbMark, Str: arg})
 	default:
-		// Could be (*LIMIT_MATCH=N) etc. — store as a verb with name
+		// Could be (*LIMIT_MATCH=N) etc. — parsed but intentionally not honored
+		// to prevent untrusted patterns from overriding caller-set safety limits
 		l.emit(Token{Kind: TokVerb, Pos: startPos, Str: name + ":" + arg})
 	}
 	return nil
